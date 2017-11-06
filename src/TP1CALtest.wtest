@@ -1,0 +1,6 @@
+import TP1CAL.*
+test "testX" {
+
+	assert.that(true)
+
+}
