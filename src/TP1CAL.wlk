@@ -1,4 +1,4 @@
-//TP1
+//TP1.....
 
 object morty{
 	var energia
