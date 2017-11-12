@@ -124,7 +124,7 @@ class Fleeb inherits Materiales{
 object rick{
 	var companiero = morty
 	var mochila=[]
-	var experimentosConocidos =#{new Bateria()}
+	var experimentosConocidos =#{new Bateria(), new Circuito(), new ShockElectrico()}
 	
 	method cambiarCompaniero(unCompaniero){
 		companiero=unCompaniero
@@ -141,7 +141,13 @@ object rick{
 		mochila.removeAll(materialesARemover)
 	}
 	method realizar(unExperimento){
+		//agregar un getName a los experimentos, y podriamos comparar con los experimentos que puede realizar
+		//experimentosQuePuedeRealizar.contains({e=> e.getName() == unExperimento.getName())})
 		
+		if (!unExperimento.puedeRealizar(mochila)){
+			self.error("No puedo realizar el experimento: " + unExperimento)
+		}
+		unExperimento.crearExperimento(self)
 	}
 	method getCompaniero() = companiero
 	method getMochila() = mochila
@@ -155,7 +161,7 @@ class Experimento inherits Materiales{ //Los experimentos una vez creados, tiene
 																						//en caso de ser necesario.
 	{
 		unCientifico.removerMateriales(componentes) // común a todos los experimentos.
-		self.aplicarEfecto(unCientifico.unCompaniero())
+		self.aplicarEfecto(unCientifico.getCompaniero())
 	}
 	method aplicarEfecto(unCompaniero)
 	method puedeRealizar(mochila)
@@ -168,7 +174,7 @@ class Bateria inherits Experimento {
 //		}               ^ lata no entiende el mensaje "+"!!
 
 	override method puedeRealizar(mochila){
-		return mochila.contains({elem=>elem.gramosDeMetal()>200}) && mochila.contains({elem=>elem.esRadioactivo()})
+		return mochila.any({elem=>elem.gramosDeMetal()>200}) && mochila.any({elem=>elem.esRadioactivo()})
 	}
 	
 	override method crearExperimento(unCientifico){
@@ -180,7 +186,7 @@ class Bateria inherits Experimento {
 	}
 	
 	override method aplicarEfecto(unCompaniero){
-		unCompaniero.cambiarEnergia(-5)
+		unCompaniero.cambioEnergia(-5)
 	}
 	
 	override method gramosDeMetal(){
@@ -207,13 +213,13 @@ class Circuito inherits Experimento {
 //		}
 
 	override method puedeRealizar(mochila){
-		return mochila.contains({e => e.electricidadQueConduce() >= 5})
+		return mochila.any({e => e.electricidadQueConduce() >= 5})
 	}
 
 	override method crearExperimento(unCientifico){
 		componentes = (unCientifico.getMochila().filter({e => e.electricidadQueConduce() >= 5})).asSet() //simplemente para que todos sean conjuntos, no modifica.
 			super(unCientifico)
-			unCientifico.recibir(#{self})
+			unCientifico.recibir(#{self}) //<-- recibir(x) espera un conjunto en x.
 	}
 	override method aplicarEfecto(unCompaniero){
 		//nothing
@@ -238,7 +244,7 @@ class Circuito inherits Experimento {
 
 class ShockElectrico inherits Experimento {
 	override method puedeRealizar(mochila){
-		return mochila.contains({e => e.energiaProducida()>0}) && mochila.contains({e => e.electricidadQueConduce() > 0})
+		return mochila.any({e => e.energiaProducida()>0}) && mochila.any({e => e.electricidadQueConduce() > 0})
 	}
 	
 	override method crearExperimento(unCientifico){
@@ -251,8 +257,15 @@ class ShockElectrico inherits Experimento {
 	override method aplicarEfecto(unCompaniero){
 		var energiaGanada = componentes.find({e => e.energiaProducida()>0}).energiaProducida() 
 											* 
-						componentes.find({e => e.electricidadQueConduce() > 0}).ElectricidadQueConduce()
+						componentes.find({e => e.electricidadQueConduce() > 0}).electricidadQueConduce()
 		/*Fin cálculo energía. */
-		unCompaniero.cambiarEnergia(energiaGanada)
+		unCompaniero.cambioEnergia(energiaGanada)
+	}
+	
+	override method gramosDeMetal(){
+	//nothing
+	}
+	override method electricidadQueConduce(){
+	//nothing
 	}
 }
