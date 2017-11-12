@@ -255,19 +255,4 @@ class ShockElectrico inherits Experimento {
 		/*Fin cálculo energía. */
 		unCompaniero.cambiarEnergia(energiaGanada)
 	}
-	override method energiaProducida(){
-		return 	0
-		}
-		
-	override method gramosDeMetal(){
-		return componentes.sum({elem=>elem.gramosDeMetal()})
-	}	
-	
-	override method electricidadQueConduce(){
-		return componentes.sum({elem=>elem.electricidadQueConduce()})*3
-	}	
-	
-	override method esRadioactivo(){
-		return componentes.any({elem =>elem.esRadiactivo()})
-	}
 }
