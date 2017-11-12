@@ -1,25 +1,25 @@
-//TP1.....
+//TP1
 
 object morty{
-	var energia
-	var mochila = [] //máximo 3
+	var energia = 0
+	var mochila = [] //tamaño máximo 3
 	
-	method puedeRecolectar(_unMaterial){
+	method puedeRecolectar(unMaterial){
 		return (mochila.size()<3)and 
-			(self.energia()>=_unMaterial.gramosDeMetal())
+			(self.energia()>=unMaterial.gramosDeMetal())
 	}
 	
-	method recolectar(_unMaterial){
-		if (not (self.puedeRecolectar(_unMaterial)))
+	method recolectar(unMaterial){
+		if (not (self.puedeRecolectar(unMaterial)))
 			{
-				self.error("No puede recolectar: " + _unMaterial)
+				self.error("No puede recolectar: " + unMaterial)
 			}
-			mochila.add(_unMaterial)
-			_unMaterial.recoleccion(self)
+			mochila.add(unMaterial)
+			unMaterial.recoleccion(self)
 		
 	}
-	method darObjetosA(_unCompaniero){
-		_unCompaniero.recibir(mochila)
+	method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
+		unCientifico.recibir(mochila)
 		mochila.clear()
 	}
 	
@@ -95,8 +95,9 @@ class MateriaOscura inherits Materiales{
 class Fleeb inherits Materiales{
 	var materialesConsumidos =[]
 	var edad
-	constructor(_conjuntoMateriales, _edad){
-		materialesConsumidos = _conjuntoMateriales
+	
+	constructor(listaMateriales, _edad){
+		materialesConsumidos = listaMateriales
 		edad = _edad
 	}
 	
@@ -130,80 +131,143 @@ object rick{
 	}
 	
 	method experimentosQuePuedeRealizar(){
-		
+		return experimentosConocidos.filter({e => e.puedeRealizar(mochila)})
 	}
 	
 	method recibir(unosMateriales){
 		mochila = mochila + unosMateriales
 	}
-	
+	method removerMateriales(materialesARemover){
+		mochila.removeAll(materialesARemover)
+	}
 	method realizar(unExperimento){
 		
 	}
+	method getCompaniero() = companiero
+	method getMochila() = mochila
 }
 
-class Pepita2 {
-	method gramosDeMetal(){
-		return 0
-	}
-}
-
-class Bateria {
-		var componentes
-		constructor(){}
-		constructor (lsComponentes){
-			componentes = (lsComponentes.find({elem=>elem.gramosDeMetal()>200}) 
-						+ lsComponentes.find({elem=>elem.esRadioactivo()})).asSet()
-		}
+class Experimento inherits Materiales{ //Los experimentos una vez creados, tienen el comportamiento de un material, 
+				  					   // y son considerados como tal
+	var componentes =#{}
 	
-	 method gramosDeMetal(){
+	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y añadir el material resultante a la mochila
+																						//en caso de ser necesario.
+	{
+		unCientifico.removerMateriales(componentes) // común a todos los experimentos.
+		self.aplicarEfecto(unCientifico.unCompaniero())
+	}
+	method aplicarEfecto(unCompaniero)
+	method puedeRealizar(mochila)
+}
+
+class Bateria inherits Experimento {
+//		constructor (lsComponentes){
+//			componentes = (lsComponentes.find({elem=>elem.gramosDeMetal()>200}) 
+//						+ lsComponentes.find({elem=>elem.esRadioactivo()})).asSet()
+//		}               ^ lata no entiende el mensaje "+"!!
+
+	override method puedeRealizar(mochila){
+		return mochila.contains({elem=>elem.gramosDeMetal()>200}) && mochila.contains({elem=>elem.esRadioactivo()})
+	}
+	
+	override method crearExperimento(unCientifico){
+		componentes = #{unCientifico.getMochila().find({elem=>elem.gramosDeMetal()>200})
+					  , unCientifico.getMochila().find({elem=>elem.esRadioactivo()})
+					   }
+					   super(unCientifico)
+					   unCientifico.recibir(#{self})
+	}
+	
+	override method aplicarEfecto(unCompaniero){
+		unCompaniero.cambiarEnergia(-5)
+	}
+	
+	override method gramosDeMetal(){
 		return componentes.sum({elem=>elem.gramosDeMetal()})
 	}
-	method energiaProducida(){
+	override method energiaProducida(){
 		return self.gramosDeMetal()*2
 	}
 	
-	method esRadioactivo(){
+	override method esRadioactivo(){
 		return true
 	}
 	
-	method electricidadQueConduce(){
+	override method electricidadQueConduce(){
 			return 0
 		}
 	
 }
 
-class Circuito {
-		var componentes 
+class Circuito inherits Experimento {
 		
-		constructor (lsComponentes){
-			componentes = lsComponentes.filter({e => e.electricidadQueConduce() >= 5})
-		}
-	
-	method energiaProducida(){
+//		constructor (lsComponentes){
+//			componentes = lsComponentes.filter({e => e.electricidadQueConduce() >= 5}) <-- devuelve una lista!
+//		}
+
+	override method puedeRealizar(mochila){
+		return mochila.contains({e => e.electricidadQueConduce() >= 5})
+	}
+
+	override method crearExperimento(unCientifico){
+		componentes = (unCientifico.getMochila().filter({e => e.electricidadQueConduce() >= 5})).asSet() //simplemente para que todos sean conjuntos, no modifica.
+			super(unCientifico)
+			unCientifico.recibir(#{self})
+	}
+	override method aplicarEfecto(unCompaniero){
+		//nothing
+	}
+	override method energiaProducida(){
 		return 	0
 		
 		}
-	method gramosDeMetal(){
+		
+	override method gramosDeMetal(){
 		return componentes.sum({elem=>elem.gramosDeMetal()})
 	}	
-	method electricidadQueConduce(){
+	
+	override method electricidadQueConduce(){
 		return componentes.sum({elem=>elem.electricidadQueConduce()})*3
 	}	
-	method esRadioactivo(){
+	
+	override method esRadioactivo(){
 		return componentes.any({elem =>elem.esRadiactivo()})
 	}
 }
 
-class ShockElectrico {
+class ShockElectrico inherits Experimento {
+	override method puedeRealizar(mochila){
+		return mochila.contains({e => e.energiaProducida()>0}) && mochila.contains({e => e.electricidadQueConduce() > 0})
+	}
 	
+	override method crearExperimento(unCientifico){
+	componentes = #{unCientifico.getMochila().find({e => e.energiaProducida()>0})
+					, unCientifico.getMochila().find({e => e.electricidadQueConduce() > 0})
+					}
+					super(unCientifico)
+	}
+	
+	override method aplicarEfecto(unCompaniero){
+		var energiaGanada = componentes.find({e => e.energiaProducida()>0}).energiaProducida() 
+											* 
+						componentes.find({e => e.electricidadQueConduce() > 0}).ElectricidadQueConduce()
+		/*Fin cálculo energía. */
+		unCompaniero.cambiarEnergia(energiaGanada)
+	}
+	override method energiaProducida(){
+		return 	0
+		}
+		
+	override method gramosDeMetal(){
+		return componentes.sum({elem=>elem.gramosDeMetal()})
+	}	
+	
+	override method electricidadQueConduce(){
+		return componentes.sum({elem=>elem.electricidadQueConduce()})*3
+	}	
+	
+	override method esRadioactivo(){
+		return componentes.any({elem =>elem.esRadiactivo()})
+	}
 }
-
-
-
-
-
-
-
-
-
