@@ -5,8 +5,11 @@ describe "tests TP1CAL"{
 	var cable1010 = new Cable(10, 10)
 	var matOscCable = new MateriaOscura(cable1010)
 	var fleebRadioact = new Fleeb([matOscCable, new Lata(2)], 16)
+	var fleebRadioact2 = new Fleeb([matOscCable, lata205], 16)
 	var lata50 = new Lata(50)
 	var lata5 = new Lata(5)
+	
+	
 	test "recolección fallida por energía"{
 		assert.throwsExceptionWithMessage("No puede recolectar: " + lata50 , {morty.recolectar(lata50)})
 		}
@@ -57,4 +60,34 @@ describe "tests TP1CAL"{
 		assert.equals(937.9, rick.getCompaniero().energia()) // el ShockElectrico suma al compañero una cantidad de energía 
 																		//				(207,1 en este caso)
 	}
+	
+	test " lata"{
+		assert.equals(205, lata205.gramosDeMetal())
+		assert.equals(20.5, lata205.electricidadQueConduce())
+		assert.equals(false, lata205.esRadioactivo())
+		assert.equals(0,lata205.energiaProducida())
+	}
+	
+	test " cable1010"{
+		assert.equals(0.1, cable1010.gramosDeMetal())
+		assert.equals(30, cable1010.electricidadQueConduce())
+		assert.equals(false, cable1010.esRadioactivo())
+		assert.equals(0,cable1010.energiaProducida())
+	}
+	
+	test " materia oscura"{
+		assert.equals(0.1, matOscCable.gramosDeMetal())
+		assert.equals(15, matOscCable.electricidadQueConduce())
+		assert.equals(false, matOscCable.esRadioactivo())
+		assert.equals(0,matOscCable.energiaProducida())
+	}
+	
+	test "fleeb"{
+		assert.equals(205.1, fleebRadioact2.gramosDeMetal())
+		assert.equals( 15, fleebRadioact2.electricidadQueConduce())
+		assert.equals(true, fleebRadioact2.esRadioactivo())
+		assert.equals(0,fleebRadioact2.energiaProducida())
+	}
+	
+
 }

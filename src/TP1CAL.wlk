@@ -106,13 +106,13 @@ class Fleeb inherits Materiales{
 		return materialesConsumidos.sum({elem=>elem.gramosDeMetal()})
 	}
 	override method electricidadQueConduce(){
-		return materialesConsumidos.min({elem=>elem.electricidadQueConduce()})
+		return (materialesConsumidos.min({elem=>elem.electricidadQueConduce()})).electricidadQueConduce()
 	}
 	override method esRadioactivo(){
 		return edad>15
 	}
 	override method energiaProducida(){
-		return materialesConsumidos.max({elem=>elem.energiaProducida()})
+		return (materialesConsumidos.max({elem=>elem.energiaProducida()})).energiaProducida()
 	}
 	override method recoleccion(recolector){
 		recolector.cambioEnergia(- (self.gramosDeMetal()*2))
@@ -263,9 +263,10 @@ class ShockElectrico inherits Experimento {
 	}
 	
 	override method gramosDeMetal(){
+		return 0
 	//nothing
 	}
 	override method electricidadQueConduce(){
-	//nothing
+		return 0//nothing
 	}
 }
