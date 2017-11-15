@@ -6,7 +6,7 @@ object morty{
 	
 	method puedeRecolectar(unMaterial){
 		return (mochila.size()<3)and 
-			(self.energia()>=unMaterial.gramosDeMetal())
+			(self.energia()>=unMaterial.energiaDeRecoleccion())
 	}
 	
 	method recolectar(unMaterial){
@@ -43,6 +43,9 @@ class Materiales {
 	method recoleccion(recolector){
 		recolector.cambioEnergia(- self.gramosDeMetal())		
 	}
+	method energiaDeRecoleccion(){
+		return self.gramosDeMetal()
+	}
 }
 
 class Lata inherits Materiales {
@@ -56,6 +59,7 @@ class Lata inherits Materiales {
 	override method electricidadQueConduce(){
 		return 0.1 * metal
 	}
+	
 	
 }
 
@@ -118,6 +122,9 @@ class Fleeb inherits Materiales{
 		recolector.cambioEnergia(- (self.gramosDeMetal()*2))
 		if (not self.esRadioactivo())
 			{recolector.cambioEnergia(10)}	
+	}
+	override method energiaDeRecoleccion(){
+		return self.gramosDeMetal()*2
 	}
 }
 	
