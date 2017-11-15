@@ -6,6 +6,7 @@ object morty{
 	
 	method puedeRecolectar(unMaterial){
 		return (mochila.size()<3)and 
+		//CORRECCION no es cierto para el fleeb!! para el fleb necesitas el doble de los gramos de metal
 			(self.energia()>=unMaterial.gramosDeMetal())
 	}
 	
@@ -153,9 +154,14 @@ object rick{
 	method getMochila() = mochila
 }
 
+//CORRECCION Separar El material del Experimento
+
 class Experimento inherits Materiales{ //Los experimentos una vez creados, tienen el comportamiento de un material, 
-				  					   // y son considerados como tal
+	
+	//CORRECCION Los componentes para aplicarel experimento deben ser calculados a partir de la mochila del cientifico			  					   // y son considerados como tal
+	//NO USAR UNA VARIABLE
 	var componentes =#{}
+	
 	
 	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y añadir el material resultante a la mochila
 																						//en caso de ser necesario.
@@ -178,6 +184,8 @@ class Bateria inherits Experimento {
 	}
 	
 	override method crearExperimento(unCientifico){
+		//CORRECCION: NO usar una variable! calcular los componentes necesarios y pasarlos por parametro
+		//CORRECCION: el algoritmo queda medio duplicado en todos los experimentos
 		componentes = #{unCientifico.getMochila().find({elem=>elem.gramosDeMetal()>200})
 					  , unCientifico.getMochila().find({elem=>elem.esRadioactivo()})
 					   }

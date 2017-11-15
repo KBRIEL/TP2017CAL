@@ -30,6 +30,8 @@ describe "tests TP1CAL"{
 		morty.recolectar(lata50)
 		assert.equals(50, morty.energia())
 	}	
+	
+	//CORRECCION separar en test mas chicos
 	test "rick crea experimentos"{
 		rick.getCompaniero().cambioEnergia(1000) // energia inicial
 		
