@@ -59,7 +59,7 @@ describe "tests TP1CAL"{
 		rick.realizar(new ExperimentoBateria())
 		assert.equals(3, rick.getMochila().size()) //debe quedar con sólo 3 materiales, ya que 2 fueron utilizado para crear la batería, y esta
 																				
-		assert.equals(730.8, rick.getCompaniero().energia()) // la batería le  resta 5 puntos de energía al compañero!
+		assert.equals(730.8, rick.getCompaniero().energia()) // la batería le resta 5 puntos de energía al compañero!
 		
 		}
 		

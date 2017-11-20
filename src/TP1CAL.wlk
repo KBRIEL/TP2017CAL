@@ -167,7 +167,7 @@ object rick{
 	method getMochila() = mochila
 }
 
-//---------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 class Experimento { //Los experimentos una vez creados, tienen el comportamiento de un material, 
 				  					   // y son considerados como tal 
 	var componentes =#{}
