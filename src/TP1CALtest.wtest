@@ -10,9 +10,27 @@ describe "tests TP1CAL"{
 	var lata5 = new Lata(5)
 	
 	
+	fixture {
+		rick.getCompaniero().cambioEnergia(1000) // energia inicial
+		
+		morty.recolectar(lata205) // -205 energia
+		morty.recolectar(fleebRadioact) // -4.2 energía
+		morty.recolectar(lata5) // - 5 energia
+		morty.darObjetosA(rick)
+		rick.getCompaniero().recolectar(lata50) // -50 energia
+		rick.getCompaniero().darObjetosA(rick)				
+												// energía recolecciones = -264.2
+												
+		
+	}
 	test "recolección fallida por energía"{
+		rick.getCompaniero().recolectar(lata205) // -205 energia
+		rick.getCompaniero().recolectar(fleebRadioact) // -4.2 energía
+		rick.getCompaniero().recolectar(lata5) // - 5 energia
+		
 		assert.throwsExceptionWithMessage("No puede recolectar: " + lata50 , {morty.recolectar(lata50)})
 		}
+	
 	test "recolección fallida por cantidad de objetos en la mochila"{
 		morty.cambioEnergia(5000)
 		morty.recolectar(lata50)
@@ -22,6 +40,7 @@ describe "tests TP1CAL"{
 		assert.throwsExceptionWithMessage("No puede recolectar: " + lata50 , {morty.recolectar(lata50)})
 	}
 	test "cambio energia"{
+		morty.sinEnergia()
 		assert.equals(0, morty.energia())
 		morty.cambioEnergia(150)
 		assert.equals(150, morty.energia())
@@ -30,36 +49,21 @@ describe "tests TP1CAL"{
 		morty.recolectar(lata50)
 		assert.equals(50, morty.energia())
 	}	
+
 	test "rick crea experimentos"{
-		rick.getCompaniero().cambioEnergia(1000) // energia inicial
-		
-		rick.getCompaniero().recolectar(lata205) // -205 energia
-		rick.getCompaniero().recolectar(fleebRadioact) // -4.2 energía
-		rick.getCompaniero().recolectar(lata5) // - 5 energia
-		rick.getCompaniero().darObjetosA(rick)
-		rick.getCompaniero().recolectar(lata50) // -50 energia
-		rick.getCompaniero().darObjetosA(rick)				
-												// energía recolecciones = -264.2
+						
+												
 												
 		assert.equals(4,rick.getMochila().size()) //En este momento la mochila de rick debe tener 4 objetos
 		assert.equals(735.8, rick.getCompaniero().energia()) //energía inicial + recolecciones
-		rick.realizar(new Bateria())
+		rick.realizar(new ExperimentoBateria())
 		assert.equals(3, rick.getMochila().size()) //debe quedar con sólo 3 materiales, ya que 2 fueron utilizado para crear la batería, y esta
-																				// se agrega como material a la mochila.
 																				
 		assert.equals(730.8, rick.getCompaniero().energia()) // la batería le resta 5 puntos de energía al compañero!
 		
-		rick.realizar(new Circuito())
-		assert.equals(3, rick.getMochila().size()) //se consume una lata, y se crea un circuito.. debe quedar igual la mochila.
-		assert.equals(730.8, rick.getCompaniero().energia()) //el circuito no modifica la energía del compañero
+		}
 		
-		rick.realizar(new ShockElectrico())
-		assert.equals(1, rick.getMochila().size()) //en este caso, se consumen tanto una lata (5) como la batería (radioactivo), no se crea
-													//material, por lo que queda sólo el circuito creado anteriormente.
-													
-		assert.equals(937.9, rick.getCompaniero().energia()) // el ShockElectrico suma al compañero una cantidad de energía 
-																		//				(207,1 en este caso)
-	}
+		
 	
 	test " lata"{
 		assert.equals(205, lata205.gramosDeMetal())
