@@ -169,7 +169,7 @@ object rick{
 
 //---------------------------------------------------------------------------------------
 class Experimento { //Los experimentos una vez creados, tienen el comportamiento de un material, 
-				  					   // y son considerados como tal
+				  					   // y son considerados como tal 
 	var componentes =#{}
 	
 	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y añadir el material resultante a la mochila
