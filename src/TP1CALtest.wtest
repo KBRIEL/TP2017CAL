@@ -39,7 +39,7 @@ describe "tests TP1CAL"{
 		assert.equals(false, morty.puedeRecolectar(lata50))
 		assert.throwsExceptionWithMessage("No puede recolectar: " + lata50 , {morty.recolectar(lata50)})
 	}
-	test "cambio energia"{
+	test "cambio  energia"{
 		morty.sinEnergia()
 		assert.equals(0, morty.energia())
 		morty.cambioEnergia(150)

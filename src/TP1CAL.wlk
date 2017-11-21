@@ -49,10 +49,8 @@ class Material {
 	method energiaDeRecoleccion(){
 		return self.gramosDeMetal()
 	}
-<<<<<<< HEAD
+
 	
-=======
->>>>>>> branch 'master' of https://github.com/KBRIEL/TP2017CAL.git
 }
 
 class Lata inherits Material {
@@ -135,12 +133,11 @@ class Fleeb inherits Material{
 	override method energiaDeRecoleccion(){
 		return self.gramosDeMetal()*2
 	}
-<<<<<<< HEAD
-=======
+
 }
->>>>>>> branch 'master' of https://github.com/KBRIEL/TP2017CAL.git
+
 	
-}
+
 
 //-----------------------------------------------------------------------------------------	
 object rick{
