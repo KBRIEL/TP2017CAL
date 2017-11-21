@@ -23,6 +23,14 @@ describe "tests TP1CAL"{
 												
 		
 	}
+	
+	test "remover"{
+		var componente =#{lata205,fleebRadioact}
+		rick.removerMateriales(componente)
+		assert.equals([lata5,lata50], rick.verMochila())
+	}
+	
+	
 	test "recolección fallida por energía"{
 		rick.getCompaniero().recolectar(lata205) // -205 energia
 		rick.getCompaniero().recolectar(fleebRadioact) // -4.2 energía

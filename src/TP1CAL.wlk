@@ -1,4 +1,71 @@
 //TP1
+class Companiero{
+	var energia
+	var mochila=[]
+	
+	method recolectar(unMaterial){
+		if (not (self.puedeRecolectar(unMaterial)))
+			{
+				self.error("No puede recolectar: " + unMaterial)
+			}
+			mochila.add(unMaterial)
+			unMaterial.recoleccion(self)
+		
+	}
+	
+	method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
+		unCientifico.recibir(mochila)
+		mochila.clear()
+	}
+	method energia(){
+		return energia
+	}
+	method cambioEnergia(_energia){
+		energia= energia + _energia
+	}
+	method puedeRecolectar(unMaterial){
+		return (mochila.size()<3)and 
+			(self.energia()>=unMaterial.energiaDeRecoleccion())
+	}
+}
+
+object summer inherits Companiero{
+	
+	override method puedeRecolectar(unMaterial){
+		return (mochila.size()<2)and 
+			(self.energia()>=unMaterial.energiaDeRecoleccion()*0.8)
+	}
+	
+	override method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
+		unCientifico.recibir(mochila)
+		mochila.clear()
+		self.cambioEnergia(-10)
+		
+	}
+	
+}
+
+object jerry inherits Companiero{
+	var cientifico= rick
+	
+	
+	method cambiarCientifico(unCientifico){
+		cientifico=unCientifico
+	}
+	method estaAlegre(unCientifico){
+		return not (cientifico == unCientifico)
+	}
+	
+	override method puedeRecolectar(unMaterial){
+		return if (self.estaAlegre(rick))
+			{super(unMaterial)}
+			else{
+			(mochila.size()==0)and 
+			(self.energia()>=unMaterial.energiaDeRecoleccion())
+		}
+	}
+	
+}
 
 object morty{
 	var energia = 0
@@ -145,6 +212,10 @@ object rick{
 	var mochila=[]
 	var experimentosConocidos =#{new ExperimentoBateria(), new ExperimentoCircuito(), new ExperimentoShockElectrico()}
 	
+	
+	method verMochila(){
+		return mochila
+	}
 	method cambiarCompaniero(unCompaniero){
 		companiero=unCompaniero
 	}
