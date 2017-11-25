@@ -9,6 +9,7 @@ describe "tests TP1CAL"{
 	var lata50 = new Lata(50)
 	var lata5 = new Lata(5)
 	
+
 	
 	fixture {
 		rick.getCompaniero().cambioEnergia(1000) // energia inicial
@@ -20,7 +21,7 @@ describe "tests TP1CAL"{
 		rick.getCompaniero().recolectar(lata50) // -50 energia
 		rick.getCompaniero().darObjetosA(rick)				
 												// energía recolecciones = -264.2
-												
+											
 		
 	}
 	
@@ -102,4 +103,40 @@ describe "tests TP1CAL"{
 	}
 	
 
+	test "morty"{
+		assert.equals(true, morty.puedeRecolectar(lata5))
+	}
+	test "summer sin energia"{
+		summer.cambioEnergia(9)
+		summer.recolectar(lata5)
+		assert.equals(true, summer.puedeRecolectar(lata5))
+		
+	}
+	test "summer con energia"{
+		summer.cambioEnergia(50)
+		assert.equals(true, summer.puedeRecolectar(lata5))
+	}
+	test "summer dar objetos"{
+		rick.vaciarMochila()
+		summer.cambioEnergia(50)
+		summer.recolectar(lata5)
+		summer.darObjetosA(rick)
+		assert.equals([lata5], rick.verMochila())
+		assert.equals(35, summer.energia())
+			
+	}
+	test "summer sin espacio mochila"{
+		summer.cambioEnergia(50)
+		summer.recolectar(lata5)
+		summer.recolectar(lata5)
+		assert.equals(false, summer.puedeRecolectar(lata5))
+	}
+	test "jerry"{
+		assert.equals(false, jerry.puedeRecolectar(lata205))
+	}
+	test "lata"{
+		assert.equals(5,lata5.energiaDeRecoleccion())
+	}
+	
+	
 }

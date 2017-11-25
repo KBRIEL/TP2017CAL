@@ -1,7 +1,8 @@
 //TP1
 class Companiero{
-	var energia
+	var energia=0
 	var mochila=[]
+	
 	
 	method recolectar(unMaterial){
 		if (not (self.puedeRecolectar(unMaterial)))
@@ -26,6 +27,11 @@ class Companiero{
 	method puedeRecolectar(unMaterial){
 		return (mochila.size()<3)and 
 			(self.energia()>=unMaterial.energiaDeRecoleccion())
+	}
+	
+
+	method sinEnergia(){
+		energia= 0
 	}
 }
 
@@ -45,19 +51,25 @@ object summer inherits Companiero{
 	
 }
 
+
+	
 object jerry inherits Companiero{
 	var cientifico= rick
 	
 	
+	method cientifico(){
+		return  rick
+	}
 	method cambiarCientifico(unCientifico){
 		cientifico=unCientifico
 	}
-	method estaAlegre(unCientifico){
-		return not (cientifico == unCientifico)
+	method estaAlegre(unCientifico, materialARecolectar){
+		return materialARecolectar.estaVivo() or
+			 not (self.cientifico()==unCientifico) 
 	}
 	
 	override method puedeRecolectar(unMaterial){
-		return if (self.estaAlegre(rick))
+		return if (self.estaAlegre(rick, unMaterial ) )
 			{super(unMaterial)}
 			else{
 			(mochila.size()==0)and 
@@ -67,37 +79,13 @@ object jerry inherits Companiero{
 	
 }
 
-object morty{
-	var energia = 0
-	var mochila = [] //tamaño máximo 3
+object morty inherits Companiero{
 	
-	method puedeRecolectar(unMaterial){
-		return (mochila.size()<3)and 
-			(self.energia()>=unMaterial.energiaDeRecoleccion())
-	}
 	
-	method recolectar(unMaterial){
-		if (not (self.puedeRecolectar(unMaterial)))
-			{
-				self.error("No puede recolectar: " + unMaterial)
-			}
-			mochila.add(unMaterial)
-			unMaterial.recoleccion(self)
-		
-	}
-	method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
-		unCientifico.recibir(mochila)
-		mochila.clear()
-	}
 	
-	method energia(){
-		return energia
-	}
-	method cambioEnergia(_energia){
-		energia= energia + _energia
-	}
-	method sinEnergia(){
-		energia= 0
+	
+	method mochila(){
+		return mochila
 	}
 }
 //-----------------------------------------------------------------------------
@@ -111,12 +99,14 @@ class Material {
 		return 0
 	}
 	method recoleccion(recolector){
-		recolector.cambioEnergia(- self.gramosDeMetal())		
+		recolector.cambioEnergia(- self.energiaDeRecoleccion())		
 	}
 	method energiaDeRecoleccion(){
 		return self.gramosDeMetal()
 	}
-
+	method estaVivo(){
+		return false
+	}
 	
 }
 
@@ -193,14 +183,17 @@ class Fleeb inherits Material{
 		return (materialesConsumidos.max({elem=>elem.energiaProducida()})).energiaProducida()
 	}
 	override method recoleccion(recolector){
-		recolector.cambioEnergia(- (self.gramosDeMetal()*2))
+		recolector.cambioEnergia(- (self.energiaDeRecoleccion()))
 		if (not self.esRadioactivo())
 			{recolector.cambioEnergia(10)}	
 	}
 	override method energiaDeRecoleccion(){
 		return self.gramosDeMetal()*2
 	}
-
+	
+	override method estaVivo(){
+		return true
+	}
 }
 
 	
@@ -215,6 +208,10 @@ object rick{
 	
 	method verMochila(){
 		return mochila
+	}
+	
+	method vaciarMochila(){
+		mochila=[]
 	}
 	method cambiarCompaniero(unCompaniero){
 		companiero=unCompaniero
@@ -389,3 +386,4 @@ class ShockElectrico inherits Material {
 	}
 
 }
+//-----------------------------------------------------
