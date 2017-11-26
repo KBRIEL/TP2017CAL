@@ -8,7 +8,11 @@ describe "tests TP1CAL"{
 	var fleebRadioact2 = new Fleeb([matOscCable, lata205], 16)
 	var lata50 = new Lata(50)
 	var lata5 = new Lata(5)
-	
+	var parasito1 = new ParasitoAlienigena(entregarTodo)
+	var parasito12 = new ParasitoAlienigena(entregarTodo2)
+	var parasito2 = new ParasitoAlienigena(descartarUnElemento)
+	var parasito3 = new ParasitoAlienigena(incrementaODecrementaEnergia)
+	var parasito4 = new ParasitoAlienigena(elementoOculto)
 
 	
 	fixture {
@@ -137,6 +141,36 @@ describe "tests TP1CAL"{
 	test "lata"{
 		assert.equals(5,lata5.energiaDeRecoleccion())
 	}
+
+	test "parasito alienigena 1 entregar todo"{
+		morty.recolectar(lata205)
+		morty.recolectar(parasito1)
+		assert.equals([],rick.getCompaniero().mochila() )
+	}
+	test"morty1"{
+		morty.recolectar(lata205)
+		morty.darObjetosA(rick)
+		assert.equals([],rick.getCompaniero().mochila() )
+	}
 	
+	test "parasito alienigena 2 descargar un elemento"{
+		morty.recolectar(lata205)
+		morty.recolectar(parasito2)
+		assert.equals([],rick.getCompaniero().mochila() )
+	}
+	
+	test "parasito alienigena 3 porcentaje "{
+		incrementaODecrementaEnergia.energiaParaEfecto(20)
+		morty.recolectar(parasito3)
+		assert.equals(0,rick.getCompaniero().energia() )
+	}
+	
+	test "parasito alienigena 4 elemento oculto"{
+		morty.mochila().clear()
+		parasito4.elementoOculto(cable1010)
+		morty.recolectar(parasito4)
+		assert.equals([parasito4, cable1010],rick.getCompaniero().mochila() )
+	}
 	
 }
+

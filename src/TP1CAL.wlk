@@ -14,6 +14,7 @@ class Companiero{
 		
 	}
 	
+	
 	method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
 		unCientifico.recibir(mochila)
 		mochila.clear()
@@ -23,6 +24,7 @@ class Companiero{
 	}
 	method cambioEnergia(_energia){
 		energia= energia + _energia
+		
 	}
 	method puedeRecolectar(unMaterial){
 		return (mochila.size()<3)and 
@@ -386,4 +388,135 @@ class ShockElectrico inherits Material {
 	}
 
 }
-//-----------------------------------------------------
+//----------------------------------------------------- parte 4
+
+class ParasitoAlienigena {
+	var recolector=morty
+	var accion
+	var cientifico=rick
+	
+	constructor(accion1){
+		accion=accion1
+	}
+	method cambiarRecolector(unRecolector){
+		recolector = unRecolector
+	}
+	method cambiarCientifico(unCientifico){
+	cientifico = unCientifico
+	}
+	method gramosDeMetal(){
+		return 10
+	}
+	method electricidadQueConduce(){
+		return false
+	}
+	method esRadioactivo(){
+		return false
+	}
+	method energiaProducida(){
+		return 5
+	}
+	method recoleccion(){
+		accion.companieroEs(recolector)
+		accion.cientificoEs(cientifico)
+		accion.efecto()		
+	}
+	method energiaDeRecoleccion(){
+		return 0
+	}
+	method estaVivo(){
+		return true
+	}
+	
+}
+
+object entregarTodo2{
+	var cientifico = rick
+	var companiero= morty
+	
+	method cientificoEs(unCientifico){
+		cientifico=unCientifico
+	}
+	method companieroEs(unCompaniero){
+		companiero=unCompaniero
+	}
+	method efecto(){
+		companiero.cambioEnergia(100)
+	
+	}
+	
+	}
+
+object entregarTodo{
+	var cientifico = rick
+	var companiero= morty
+	
+	method cientificoEs(unCientifico){
+		cientifico=unCientifico
+	}
+	method companieroEs(unCompaniero){
+		companiero=unCompaniero
+	}
+	method efecto(){
+		companiero.darObjetosA(cientifico)
+	
+	}
+}
+
+object descartarUnElemento{
+	var cientifico = rick
+	var companiero= morty
+	
+	method cientificoEs(unCientifico){
+		cientifico=unCientifico
+	}
+	method companieroEs(unCompaniero){
+		companiero=unCompaniero
+	}
+	method efecto(){
+		if (companiero.mochila().size()>0)
+			{ companiero.mochila().remove(companiero.mochila().get(0))}
+			
+	
+	}
+}
+
+object incrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se configura al inicio del juego
+	var cientifico = rick
+	var companiero= morty
+	var porcentajeEnergia
+	
+	method cientificoEs(unCientifico){
+		cientifico=unCientifico
+	}
+	method companieroEs(unCompaniero){
+		companiero=unCompaniero
+	}
+	method energiaParaEfecto(porcentaje){// es el porcentaje ejem 10 es el 10%
+		 porcentajeEnergia= porcentaje/100
+	}
+	method efecto(){
+		companiero.cambioEnergia(companiero.energia()* porcentajeEnergia)
+	}
+}
+
+object elementoOculto{//la acción elementoOculto(unElemento) se configura al inicio del juego
+	var cientifico = rick
+	var companiero= morty
+	var elemento
+	
+	method cientificoEs(unCientifico){
+		cientifico=unCientifico
+	}
+	method companieroEs(unCompaniero){
+		companiero=unCompaniero
+	}
+	method elementoOculto(unElemento){
+		elemento=unElemento
+	}
+	method efecto(){
+		companiero.recolectar(elemento)
+	}
+}
+
+
