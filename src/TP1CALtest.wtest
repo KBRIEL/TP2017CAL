@@ -156,21 +156,22 @@ describe "tests TP1CAL"{
 	test "parasito alienigena 2 descargar un elemento"{
 		morty.recolectar(lata205)
 		morty.recolectar(parasito2)
-		assert.equals([],rick.getCompaniero().mochila() )
+		assert.equals([parasito2],rick.getCompaniero().mochila() )
 	}
 	
 	test "parasito alienigena 3 porcentaje "{
-		incrementaODecrementaEnergia.energiaParaEfecto(20)
+		morty.sinEnergia()
+		morty.cambioEnergia(10)
+		incrementaODecrementaEnergia.energiaParaEfecto(10)
 		morty.recolectar(parasito3)
-		assert.equals(0,rick.getCompaniero().energia() )
+		assert.equals(11,rick.getCompaniero().energia() )
 	}
 	
 	test "parasito alienigena 4 elemento oculto"{
 		morty.mochila().clear()
-		parasito4.elementoOculto(cable1010)
+		elementoOculto.elementoOculto(cable1010)
 		morty.recolectar(parasito4)
 		assert.equals([parasito4, cable1010],rick.getCompaniero().mochila() )
 	}
 	
 }
-

@@ -410,17 +410,19 @@ class ParasitoAlienigena {
 	method electricidadQueConduce(){
 		return false
 	}
+	method recolector()=recolector
 	method esRadioactivo(){
 		return false
 	}
 	method energiaProducida(){
 		return 5
 	}
-	method recoleccion(){
-		accion.companieroEs(recolector)
-		accion.cientificoEs(cientifico)
+	
+	method recoleccion(unRecolector){
+		accion.companieroEs(unRecolector)
 		accion.efecto()		
 	}
+	
 	method energiaDeRecoleccion(){
 		return 0
 	}
@@ -503,7 +505,7 @@ object incrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se
 object elementoOculto{//la acción elementoOculto(unElemento) se configura al inicio del juego
 	var cientifico = rick
 	var companiero= morty
-	var elemento
+	var elemento 
 	
 	method cientificoEs(unCientifico){
 		cientifico=unCientifico
