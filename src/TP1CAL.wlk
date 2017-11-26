@@ -468,13 +468,17 @@ object descartarUnElemento{
 	}
 }
 
-object incrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se configura al inicio del juego
+class IncrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se configura al inicio del juego
 	var cientifico = rick
 	var companiero= morty
 	var porcentajeEnergia
 	
+	constructor( porcentaje){
+		porcentajeEnergia = porcentaje
+	}
+	
 	method cientificoEs(unCientifico){
-		cientifico=unCientifico
+		cientifico=unCientifico/100
 	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
@@ -487,20 +491,21 @@ object incrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se
 	}
 }
 
-object elementoOculto{//la acción elementoOculto(unElemento) se configura al inicio del juego
+class ElementoOculto{//la acción elementoOculto(unElemento) se configura al inicio del juego
 	var cientifico = rick
 	var companiero= morty
-	var elemento 
-	
+	var elemento
+	 
+	constructor( unElemento){
+		elemento = unElemento
+	}
 	method cientificoEs(unCientifico){
 		cientifico=unCientifico
 	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
 	}
-	method elementoOculto(unElemento){
-		elemento=unElemento
-	}
+	
 	method efecto(){
 		companiero.recolectar(elemento)
 	}
