@@ -392,11 +392,11 @@ class ShockElectrico inherits Material {
 
 class ParasitoAlienigena {
 	var recolector=morty
-	var accion
+	var acciones
 	var cientifico=rick
 	
-	constructor(accion1){
-		accion=accion1
+	constructor(lasAcciones){
+		acciones=lasAcciones
 	}
 	method cambiarRecolector(unRecolector){
 		recolector = unRecolector
@@ -419,8 +419,8 @@ class ParasitoAlienigena {
 	}
 	
 	method recoleccion(unRecolector){
-		accion.companieroEs(unRecolector)
-		accion.efecto()		
+		acciones.map({elem=>elem.companieroEs(unRecolector)})
+		acciones.map({elem=>elem.efecto()})		
 	}
 	
 	method energiaDeRecoleccion(){
@@ -432,22 +432,7 @@ class ParasitoAlienigena {
 	
 }
 
-object entregarTodo2{
-	var cientifico = rick
-	var companiero= morty
-	
-	method cientificoEs(unCientifico){
-		cientifico=unCientifico
-	}
-	method companieroEs(unCompaniero){
-		companiero=unCompaniero
-	}
-	method efecto(){
-		companiero.cambioEnergia(100)
-	
-	}
-	
-	}
+
 
 object entregarTodo{
 	var cientifico = rick
