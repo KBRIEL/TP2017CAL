@@ -159,7 +159,7 @@ describe "tests TP1CAL"{
 	test "parasito alienigena 2 descargar un elemento"{
 		morty.recolectar(lata205)
 		morty.recolectar(parasito2)
-		assert.equals([parasito2],rick.getCompaniero().mochila() )
+		assert.equals([lata205],rick.getCompaniero().mochila() )
 	}
 	
 	test "parasito alienigena 3 porcentaje "{
@@ -173,8 +173,6 @@ describe "tests TP1CAL"{
 	
 	test "parasito alienigena 4 elemento oculto"{
 		morty.mochila().clear()
-		//oculto1.elementoOculto(cable1010)
-		//oculto1.elementoOculto(lata50)
 		morty.recolectar(parasito4)
 		assert.equals([parasito4,lata5],rick.getCompaniero().mochila() )
 	}

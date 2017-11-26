@@ -462,7 +462,7 @@ object descartarUnElemento{
 	}
 	method efecto(){
 		if (companiero.mochila().size()>0)
-			{ companiero.mochila().remove(companiero.mochila().get(0))}
+			{ companiero.mochila().remove(companiero.mochila().anyOne())}
 			
 	
 	}
@@ -478,16 +478,16 @@ class IncrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se 
 	}
 	
 	method cientificoEs(unCientifico){
-		cientifico=unCientifico/100
+		cientifico=unCientifico
 	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
 	}
 	method energiaParaEfecto(porcentaje){// es el porcentaje ejem 10 es el 10%
-		 porcentajeEnergia= porcentaje/100
+		 porcentajeEnergia= porcentaje
 	}
 	method efecto(){
-		companiero.cambioEnergia(companiero.energia()* porcentajeEnergia)
+		companiero.cambioEnergia(companiero.energia()* porcentajeEnergia/100)
 	}
 }
 
