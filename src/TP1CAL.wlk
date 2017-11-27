@@ -2,8 +2,12 @@
 class Companiero{
 	var energia=0
 	var mochila=[]
+	var cientifico= rick //default
 	
-	
+	method cambiarCientifico(unCientifico) {
+		cientifico=unCientifico
+	}
+	method getCientifico() = cientifico
 	method recolectar(unMaterial){
 		if (not (self.puedeRecolectar(unMaterial)))
 			{
@@ -13,7 +17,6 @@ class Companiero{
 			unMaterial.recoleccion(self)
 		
 	}
-	
 	
 	method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
 		unCientifico.recibir(mochila)
@@ -31,7 +34,6 @@ class Companiero{
 			(self.energia()>=unMaterial.energiaDeRecoleccion())
 	}
 	
-
 	method sinEnergia(){
 		energia= 0
 	}
@@ -48,43 +50,26 @@ object summer inherits Companiero{
 		unCientifico.recibir(mochila)
 		mochila.clear()
 		self.cambioEnergia(-10)
-		
 	}
 	
 }
-
-
 	
 object jerry inherits Companiero{
-	var cientifico= rick
 	
-	
-	method cientifico(){
-		return  rick
-	}
-	method cambiarCientifico(unCientifico){
-		cientifico=unCientifico
-	}
-	method estaAlegre(unCientifico, materialARecolectar){
-		return materialARecolectar.estaVivo() or
-			 not (self.cientifico()==unCientifico) 
+	method estaAlegre() {
+		return !cientifico.equals(rick) || mochila.any({e=> e.estaVivo()})
 	}
 	
-	override method puedeRecolectar(unMaterial){
-		return if (self.estaAlegre(rick, unMaterial ) )
-			{super(unMaterial)}
-			else{
-			(mochila.size()==0)and 
-			(self.energia()>=unMaterial.energiaDeRecoleccion())
-		}
+	override method puedeRecolectar(unMaterial) {
+		return if (self.estaAlegre()) super(unMaterial)
+												else{
+													(mochila.size()==0)and 
+													(self.energia()>=unMaterial.energiaDeRecoleccion()) }
 	}
 	
 }
 
 object morty inherits Companiero{
-	
-	
-	
 	
 	method mochila(){
 		return mochila
@@ -203,10 +188,10 @@ class Fleeb inherits Material{
 
 //-----------------------------------------------------------------------------------------	
 object rick{
-	var companiero = morty
+	var companiero = morty //default
 	var mochila=[]
-	var experimentosConocidos =#{new ExperimentoBateria(), new ExperimentoCircuito(), new ExperimentoShockElectrico()}
-	
+	var experimentosConocidos =#{experimentoBateria, experimentoCircuito, experimentoShockElectrico}
+	var estrategia = inteligenciaAzar //default
 	
 	method verMochila(){
 		return mochila
@@ -218,6 +203,10 @@ object rick{
 	method cambiarCompaniero(unCompaniero){
 		companiero=unCompaniero
 	}
+	method setEstrategia(_estrategia){
+		estrategia = _estrategia
+	}
+	method getEstrategia() = estrategia
 	
 	method experimentosQuePuedeRealizar(){
 		return experimentosConocidos.filter({e => e.puedeRealizar(mochila)})
@@ -230,10 +219,9 @@ object rick{
 		mochila.removeAll(materialesARemover)
 	}
 	method realizar(unExperimento){
-		//agregar un getName a los experimentos, y podriamos comparar con los experimentos que puede realizar
 		//experimentosQuePuedeRealizar.contains({e=> e.getName() == unExperimento.getName())})
 		
-		if (not unExperimento.puedeRealizar(mochila)){
+		if (not self.experimentosQuePuedeRealizar().contains(unExperimento)){
 			self.error("No puedo realizar el experimento: " + unExperimento)
 		}
 		unExperimento.crearExperimento(self)
@@ -245,32 +233,34 @@ object rick{
 //--------------------------------------------------------------------------------------
 class Experimento { //Los experimentos una vez creados, tienen el comportamiento de un material, 
 				  					   // y son considerados como tal 
-	var componentes =#{}
+	var componentes = #{}
 	
-	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y añadir el material resultante a la mochila
+	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y aï¿½adir el material resultante a la mochila
 																						//en caso de ser necesario.
 	{
-		unCientifico.removerMateriales(componentes) // común a todos los experimentos.
+		unCientifico.removerMateriales(componentes) // comï¿½n a todos los experimentos.
 		self.aplicarEfecto(unCientifico.getCompaniero())
 	}
+	
 	method aplicarEfecto(unCompaniero){
 		//nothing
 	}
 	method puedeRealizar(mochila)
 }
 
-class ExperimentoBateria inherits Experimento{
+object experimentoBateria inherits Experimento{
 	
 	override method puedeRealizar(mochila){
 		return mochila.any({elem=>elem.gramosDeMetal()>200}) && mochila.any({elem=>elem.esRadioactivo()})
 	}
 	
 	override method crearExperimento(unCientifico){
-		componentes = #{unCientifico.getMochila().find({elem=>elem.gramosDeMetal()>200})
-					  , unCientifico.getMochila().find({elem=>elem.esRadioactivo()})
+		componentes.clear()
+		componentes = #{unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({elem=>elem.gramosDeMetal()>200}))
+					  , unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({elem=>elem.esRadioactivo()}))
 					   }
 					   super(unCientifico)
-					   unCientifico.recibir(#{self})
+					   unCientifico.recibir(#{new Bateria(componentes.sum({e=> e.gramosDeMetal()}))})
 	}
 	override method aplicarEfecto(unCompaniero){
 		unCompaniero.cambioEnergia(-5)
@@ -278,31 +268,36 @@ class ExperimentoBateria inherits Experimento{
 	
 }
 
-class ExperimentoCircuito inherits Experimento{
+object experimentoCircuito inherits Experimento{
 	
 	override method puedeRealizar(mochila){
 		return mochila.any({e => e.electricidadQueConduce() >= 5})
 	}
 
 	override method crearExperimento(unCientifico){
+		componentes.clear()
 		if(self.puedeRealizar(unCientifico.getMochila())){
 		componentes = (unCientifico.getMochila().filter({e => e.electricidadQueConduce() >= 5})).asSet() //simplemente para que todos sean conjuntos, no modifica.
 			super(unCientifico)
-			unCientifico.recibir(#{self}) //<-- recibir(x) espera un conjunto en x.
+			unCientifico.recibir(#{new Circuito(componentes.sum({elem=>elem.gramosDeMetal()}) 
+											  , componentes.sum({elem=>elem.electricidadQueConduce()})*3
+											  , componentes.any({elem =>elem.esRadiactivo()})
+								)}) //<-- recibir(x) espera un conjunto en x.
 			}
 	}
 	
 }
 
-class ExperimentoShockElectrico inherits Experimento{
-	
+object experimentoShockElectrico inherits Experimento{
+
 	override method puedeRealizar(mochila){
 		return mochila.any({e => e.energiaProducida()>0}) && mochila.any({e => e.electricidadQueConduce() > 0})
 	}
 	
 	override method crearExperimento(unCientifico){
-	componentes = #{unCientifico.getMochila().find({e => e.energiaProducida()>0})
-					, unCientifico.getMochila().find({e => e.electricidadQueConduce() > 0})
+	componentes.clear()
+	componentes = #{unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({e => e.energiaProducida()>0}))
+					, unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({e => e.electricidadQueConduce() > 0}))
 					}
 					super(unCientifico)
 	}
@@ -310,7 +305,7 @@ class ExperimentoShockElectrico inherits Experimento{
 		var energiaGanada = componentes.find({e => e.energiaProducida()>0}).energiaProducida() 
 											* 
 						componentes.find({e => e.electricidadQueConduce() > 0}).electricidadQueConduce()
-		/*Fin cálculo energía. */
+		/*Fin cï¿½lculo energï¿½a. */
 		unCompaniero.cambioEnergia(energiaGanada)
 	}
 }
@@ -318,21 +313,13 @@ class ExperimentoShockElectrico inherits Experimento{
 
 //------------------------------------------------------------------------
 class Bateria inherits Material {
-	var componentes=#{}
-//		constructor (lsComponentes){
-//			componentes = (lsComponentes.find({elem=>elem.gramosDeMetal()>200}) 
-//						+ lsComponentes.find({elem=>elem.esRadioactivo()})).asSet()
-//		}               ^ lata no entiende el mensaje "+"!!
-
-	method puedeRealizar(mochila){
-		return mochila.any({elem=>elem.gramosDeMetal()>200}) && mochila.any({elem=>elem.esRadioactivo()})
-	}
-	
-	
-	 
+	var metal
+		constructor (_metal){
+			metal = _metal
+		}
 	
 	override method gramosDeMetal(){
-		return componentes.sum({elem=>elem.gramosDeMetal()})
+		return metal
 	}
 	override method energiaProducida(){
 		return self.gramosDeMetal()*2
@@ -349,12 +336,15 @@ class Bateria inherits Material {
 }
 
 class Circuito inherits Material {
-		var componentes=#{}
-	//	constructor (lsComponentes){
-	//	componentes = lsComponentes.filter({e => e.electricidadQueConduce() >= 5}) //<-- devuelve una lista!
-	//	}
-
+	var metal
+	var electricidadAConducir
+	var radioactivo
 	
+		constructor (_metal, _electricidad, _radioactivo){
+			metal = _metal
+			electricidadAConducir = _electricidad
+			radioactivo = _radioactivo
+		}
 	 
 	override method energiaProducida(){
 		return 	0
@@ -362,55 +352,33 @@ class Circuito inherits Material {
 		}
 		
 	override method gramosDeMetal(){
-		return componentes.sum({elem=>elem.gramosDeMetal()})
+		return metal
 	}	
 	
 	override method electricidadQueConduce(){
-		return componentes.sum({elem=>elem.electricidadQueConduce()})*3
+		return electricidadAConducir
 	}	
 	
 	override method esRadioactivo(){
-		return componentes.any({elem =>elem.esRadiactivo()})
+		return radioactivo
 	}
 }
 
-class ShockElectrico inherits Material {
-	var componentes =#{}
-	
-		
-	
-	override method gramosDeMetal(){
-		return 0
-	//nothing
-	}
-	override method electricidadQueConduce(){
-		return 0//nothing
-	}
-
-}
 //----------------------------------------------------- parte 4
 
 class ParasitoAlienigena {
-	var recolector=morty
 	var acciones
-	var cientifico=rick
 	
-	constructor(lasAcciones){
-		acciones=lasAcciones
+	constructor(_acciones){
+		acciones= _acciones
 	}
-	method cambiarRecolector(unRecolector){
-		recolector = unRecolector
-	}
-	method cambiarCientifico(unCientifico){
-	cientifico = unCientifico
-	}
+
 	method gramosDeMetal(){
 		return 10
 	}
 	method electricidadQueConduce(){
-		return false
+		return 0
 	}
-	method recolector()=recolector
 	method esRadioactivo(){
 		return false
 	}
@@ -419,8 +387,10 @@ class ParasitoAlienigena {
 	}
 	
 	method recoleccion(unRecolector){
-		acciones.map({elem=>elem.companieroEs(unRecolector)})
-		acciones.map({elem=>elem.efecto()})		
+		acciones.forEach({accion =>
+		accion.companieroEs(unRecolector)
+		accion.efecto()
+		})
 	}
 	
 	method energiaDeRecoleccion(){
@@ -432,83 +402,95 @@ class ParasitoAlienigena {
 	
 }
 
-
-
 object entregarTodo{
-	var cientifico = rick
 	var companiero= morty
 	
-	method cientificoEs(unCientifico){
-		cientifico=unCientifico
-	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
 	}
 	method efecto(){
-		companiero.darObjetosA(cientifico)
+		companiero.darObjetosA(companiero.getCientifico())
 	
 	}
 }
 
 object descartarUnElemento{
-	var cientifico = rick
 	var companiero= morty
 	
-	method cientificoEs(unCientifico){
-		cientifico=unCientifico
-	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
 	}
 	method efecto(){
 		if (companiero.mochila().size()>0)
-			{ companiero.mochila().remove(companiero.mochila().anyOne())}
-			
-	
+			{ companiero.mochila().remove(companiero.mochila().anyOne())}	
 	}
 }
 
-class IncrementaODecrementaEnergia{//la acción energiaParaEfecto(porcentaje) se configura al inicio del juego
-	var cientifico = rick
+class IncrementaODecrementaEnergia{//la acciï¿½n energiaParaEfecto(porcentaje) se configura al inicio del juego
 	var companiero= morty
 	var porcentajeEnergia
-	
-	constructor( porcentaje){
-		porcentajeEnergia = porcentaje
-	}
-	
-	method cientificoEs(unCientifico){
-		cientifico=unCientifico
+	constructor(_porcentajeEnergia){// es el porcentaje ejem 10 es el 10%
+									// positivo suma, negativo resta, ej: -10 resta el 10%
+		porcentajeEnergia = _porcentajeEnergia / 100
 	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
 	}
-	method energiaParaEfecto(porcentaje){// es el porcentaje ejem 10 es el 10%
-		 porcentajeEnergia= porcentaje
-	}
 	method efecto(){
-		companiero.cambioEnergia(companiero.energia()* porcentajeEnergia/100)
+		companiero.cambioEnergia(companiero.energia()* porcentajeEnergia)
 	}
 }
 
-class ElementoOculto{//la acción elementoOculto(unElemento) se configura al inicio del juego
-	var cientifico = rick
+class ElementoOculto{//la acciï¿½n elementoOculto(unElemento) se configura al inicio del juego
 	var companiero= morty
-	var elemento
-	 
-	constructor( unElemento){
-		elemento = unElemento
-	}
-	method cientificoEs(unCientifico){
-		cientifico=unCientifico
+	var elemento 
+	
+	constructor(_elemento){
+		elemento = _elemento
 	}
 	method companieroEs(unCompaniero){
 		companiero=unCompaniero
 	}
-	
 	method efecto(){
 		companiero.recolectar(elemento)
 	}
 }
 
+//-----------------------------------------------
+//P5
 
+object inteligenciaAzar {
+	method elegir(lsMateriales){
+		return lsMateriales.anyOne()
+	}
+}
+
+object inteligenciaMenorMetal{
+	method elegir(lsMateriales){
+		return lsMateriales.min({e=>e.gramosDeMetal()})
+	}
+}
+
+object inteligenciaMejorGenerador{
+	method elegir(lsMateriales){
+		return lsMateriales.max({e=>e.energiaProducida()})
+	}
+}
+
+object inteligenciaEcologico{ //se considera que si no se cumplen ninguna de las opciones, aplique la estrategia al azar
+											                                              	//considerada por defecto ^
+	method elegir(lsMateriales){
+		var eleccion = inteligenciaAzar.elegir(lsMateriales)
+		if (lsMateriales.any({e => e.estaVivo()})){
+			eleccion = lsMateriales.find({e => e.estaVivo()})
+		}else{
+			if (lsMateriales.any({e => e.esRadioactivo()})){
+				eleccion = lsMateriales.find({e => e.esRadioactivo()})
+			}
+		}
+		return eleccion
+		
+		// hubiera preferido dejar 'azar' al inicio, if radioactivo segundo, if esta vivo tercero SIN ELSE intermedio
+		// aunque de esa forma hay que leerlo "a la inversa"
+	}
+}

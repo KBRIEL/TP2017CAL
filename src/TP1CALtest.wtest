@@ -8,14 +8,10 @@ describe "tests TP1CAL"{
 	var fleebRadioact2 = new Fleeb([matOscCable, lata205], 16)
 	var lata50 = new Lata(50)
 	var lata5 = new Lata(5)
-	var oculto2 = new ElementoOculto(cable1010)
-	var incrementa = new IncrementaODecrementaEnergia(10)
-	var decrementa = new IncrementaODecrementaEnergia(-5)
-	var oculto1 = new ElementoOculto(lata5)
 	var parasito1 = new ParasitoAlienigena([entregarTodo])
 	var parasito2 = new ParasitoAlienigena([descartarUnElemento])
-	var parasito3 = new ParasitoAlienigena([incrementa,descartarUnElemento])
-	var parasito4 = new ParasitoAlienigena([oculto1,incrementa,decrementa])
+	var parasito3 = new ParasitoAlienigena([new IncrementaODecrementaEnergia(10)])
+	var parasito4 = new ParasitoAlienigena([new ElementoOculto(cable1010)])
 
 	
 	fixture {
@@ -72,7 +68,7 @@ describe "tests TP1CAL"{
 												
 		assert.equals(4,rick.getMochila().size()) //En este momento la mochila de rick debe tener 4 objetos
 		assert.equals(735.8, rick.getCompaniero().energia()) //energía inicial + recolecciones
-		rick.realizar(new ExperimentoBateria())
+		rick.realizar(experimentoBateria)
 		assert.equals(3, rick.getMochila().size()) //debe quedar con sólo 3 materiales, ya que 2 fueron utilizado para crear la batería, y esta
 																				
 		assert.equals(730.8, rick.getCompaniero().energia()) // la batería le resta 5 puntos de energía al compañero!
@@ -159,14 +155,22 @@ describe "tests TP1CAL"{
 	test "parasito alienigena 2 descargar un elemento"{
 		morty.recolectar(lata205)
 		morty.recolectar(parasito2)
-		assert.equals([lata205],rick.getCompaniero().mochila() )
+		assert.equals(1,rick.getCompaniero().mochila().size() ) // descarto al azar, no tengo idea 
+																// cual es el elemento en la mochila
+																// para testear.
+	}
+	
+	test 'parasito sumo 10% resto 5%'{
+		var parasito105 = new ParasitoAlienigena([new IncrementaODecrementaEnergia(10), new IncrementaODecrementaEnergia(-5)])
+		morty.sinEnergia()
+		morty.cambioEnergia(100)
+		morty.recolectar(parasito105)
+		assert.equals(104.5, morty.energia())
 	}
 	
 	test "parasito alienigena 3 porcentaje "{
 		morty.sinEnergia()
 		morty.cambioEnergia(10)
-		decrementa.energiaParaEfecto(-5)
-		incrementa.energiaParaEfecto(10)
 		morty.recolectar(parasito3)
 		assert.equals(11,rick.getCompaniero().energia() )
 	}
@@ -174,7 +178,19 @@ describe "tests TP1CAL"{
 	test "parasito alienigena 4 elemento oculto"{
 		morty.mochila().clear()
 		morty.recolectar(parasito4)
-		assert.equals([parasito4,lata5],rick.getCompaniero().mochila() )
+		assert.equals([parasito4, cable1010],rick.getCompaniero().mochila() )
 	}
-	
+	test 'Estrategia ecológico'{
+		assert.equals(fleebRadioact, inteligenciaEcologico.elegir(rick.getMochila())) // fleeb = ser vivo, se esta probando si 
+																					// la estrategia funciona, 
+																					// de los materiales candidatos
+																					// se encarga el experimento.
+	}
+	test 'Estrategia Menor Metal'{
+		assert.equals(fleebRadioact, inteligenciaMenorMetal.elegir(rick.getMochila())) //el fleeb es el elemento de menor metal (2.1)
+	}
+	test 'Estrategia Mayor generador eléctrico'{
+		rick.recibir(#{parasito3}) //hard-codeo ya que no tengo elementos que generan en la mochila
+		assert.equals(parasito3, inteligenciaMejorGenerador.elegir(rick.getMochila())) //generando '5' es el mayor.
+	}
 }
