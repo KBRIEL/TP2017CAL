@@ -206,7 +206,6 @@ object rick{
 	method setEstrategia(_estrategia){
 		estrategia = _estrategia
 	}
-	method getEstrategia() = estrategia
 	
 	method experimentosQuePuedeRealizar(){
 		return experimentosConocidos.filter({e => e.puedeRealizar(mochila)})
@@ -226,6 +225,9 @@ object rick{
 		}
 		unExperimento.crearExperimento(self)
 	}
+	method conseguirMateriales(bloqueFiltro){
+		return estrategia.elegir(mochila.filter(bloqueFiltro))
+	}
 	method getCompaniero() = companiero
 	method getMochila() = mochila
 }
@@ -233,19 +235,21 @@ object rick{
 //--------------------------------------------------------------------------------------
 class Experimento { //Los experimentos una vez creados, tienen el comportamiento de un material, 
 				  					   // y son considerados como tal 
-	var componentes = #{}
 	
 	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y a�adir el material resultante a la mochila
 																						//en caso de ser necesario.
 	{
+		var componentes= self.filtrado(unCientifico)
 		unCientifico.removerMateriales(componentes) // com�n a todos los experimentos.
 		self.aplicarEfecto(unCientifico.getCompaniero())
+		unCientifico.recibir(#{self.nuevoMaterial(componentes)})
 	}
-	
+	method filtrado(unCientifico)
 	method aplicarEfecto(unCompaniero){
 		//nothing
 	}
 	method puedeRealizar(mochila)
+	method nuevoMaterial(componentes)
 }
 
 object experimentoBateria inherits Experimento{
@@ -253,15 +257,15 @@ object experimentoBateria inherits Experimento{
 	override method puedeRealizar(mochila){
 		return mochila.any({elem=>elem.gramosDeMetal()>200}) && mochila.any({elem=>elem.esRadioactivo()})
 	}
-	
-	override method crearExperimento(unCientifico){
-		componentes.clear()
-		componentes = #{unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({elem=>elem.gramosDeMetal()>200}))
-					  , unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({elem=>elem.esRadioactivo()}))
+	override method filtrado(unCientifico){
+		return #{unCientifico.conseguirMateriales({elem=>elem.gramosDeMetal()>200})
+					  , unCientifico.conseguirMateriales({elem=>elem.esRadioactivo()})
 					   }
-					   super(unCientifico)
-					   unCientifico.recibir(#{new Bateria(componentes.sum({e=> e.gramosDeMetal()}))})
 	}
+	override method nuevoMaterial(componentes){
+		return new Bateria(componentes.sum({e=> e.gramosDeMetal()}))
+	}
+	
 	override method aplicarEfecto(unCompaniero){
 		unCompaniero.cambioEnergia(-5)
 	}
@@ -273,35 +277,35 @@ object experimentoCircuito inherits Experimento{
 	override method puedeRealizar(mochila){
 		return mochila.any({e => e.electricidadQueConduce() >= 5})
 	}
-
-	override method crearExperimento(unCientifico){
-		componentes.clear()
-		if(self.puedeRealizar(unCientifico.getMochila())){
-		componentes = (unCientifico.getMochila().filter({e => e.electricidadQueConduce() >= 5})).asSet() //simplemente para que todos sean conjuntos, no modifica.
-			super(unCientifico)
-			unCientifico.recibir(#{new Circuito(componentes.sum({elem=>elem.gramosDeMetal()}) 
+	override method nuevoMaterial(componentes){
+		return new Circuito(componentes.sum({elem=>elem.gramosDeMetal()}) 
 											  , componentes.sum({elem=>elem.electricidadQueConduce()})*3
-											  , componentes.any({elem =>elem.esRadiactivo()})
-								)}) //<-- recibir(x) espera un conjunto en x.
-			}
+											  , componentes.any({elem =>elem.esRadiactivo()}))
 	}
-	
+	override method filtrado(unCientifico){
+		return unCientifico.getMochila().filter({e => e.electricidadQueConduce() >= 5}).asSet() //simplemente para que todos sean conjuntos, no modifica.
+	}	
 }
 
 object experimentoShockElectrico inherits Experimento{
-
 	override method puedeRealizar(mochila){
 		return mochila.any({e => e.energiaProducida()>0}) && mochila.any({e => e.electricidadQueConduce() > 0})
 	}
+	override method nuevoMaterial(componentes){
+		self.error('no debería entrar acá')
+	}
+	override method filtrado(unCientifico){
+		self.error('no debería entrar aca')
+	}
 	
 	override method crearExperimento(unCientifico){
-	componentes.clear()
-	componentes = #{unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({e => e.energiaProducida()>0}))
-					, unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({e => e.electricidadQueConduce() > 0}))
+	var componentes = #{unCientifico.conseguirMateriales({e => e.energiaProducida()>0})
+					, unCientifico.conseguirMateriales({e => e.electricidadQueConduce() > 0})
 					}
-					super(unCientifico)
+					self.aplicarEfecto(unCientifico, componentes)
+					
 	}
-	override method aplicarEfecto(unCompaniero){
+	method aplicarEfecto(unCompaniero, componentes){
 		var energiaGanada = componentes.find({e => e.energiaProducida()>0}).energiaProducida() 
 											* 
 						componentes.find({e => e.electricidadQueConduce() > 0}).electricidadQueConduce()
