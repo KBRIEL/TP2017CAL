@@ -391,9 +391,7 @@ class ParasitoAlienigena {
 	}
 	
 	method recoleccion(unRecolector){
-		acciones.forEach({accion =>
-		accion.companieroEs(unRecolector)
-		accion.efecto()
+		acciones.forEach({accion =>accion.efecto(unRecolector)
 		})
 	}
 	
@@ -407,56 +405,45 @@ class ParasitoAlienigena {
 }
 
 object entregarTodo{
-	var companiero= morty
 	
-	method companieroEs(unCompaniero){
-		companiero=unCompaniero
-	}
-	method efecto(){
-		companiero.darObjetosA(companiero.getCientifico())
+	method efecto(recolector){
+		recolector.darObjetosA(recolector.getCientifico())
 	
 	}
 }
 
 object descartarUnElemento{
-	var companiero= morty
 	
-	method companieroEs(unCompaniero){
-		companiero=unCompaniero
-	}
-	method efecto(){
-		if (companiero.mochila().size()>0)
-			{ companiero.mochila().remove(companiero.mochila().anyOne())}	
+	method efecto(recolector){
+		if (recolector.mochila().size()>0)
+			{ recolector.mochila().remove(recolector.mochila().anyOne())}	
 	}
 }
 
 class IncrementaODecrementaEnergia{//la acci�n energiaParaEfecto(porcentaje) se configura al inicio del juego
-	var companiero= morty
+	
 	var porcentajeEnergia
 	constructor(_porcentajeEnergia){// es el porcentaje ejem 10 es el 10%
 									// positivo suma, negativo resta, ej: -10 resta el 10%
 		porcentajeEnergia = _porcentajeEnergia / 100
 	}
-	method companieroEs(unCompaniero){
-		companiero=unCompaniero
-	}
-	method efecto(){
-		companiero.cambioEnergia(companiero.energia()* porcentajeEnergia)
+
+
+	method efecto(recolector){
+		recolector.cambioEnergia(recolector.energia()* porcentajeEnergia)
 	}
 }
 
 class ElementoOculto{//la acci�n elementoOculto(unElemento) se configura al inicio del juego
-	var companiero= morty
+	
 	var elemento 
 	
 	constructor(_elemento){
 		elemento = _elemento
 	}
-	method companieroEs(unCompaniero){
-		companiero=unCompaniero
-	}
-	method efecto(){
-		companiero.recolectar(elemento)
+	
+	method efecto(recolector){
+		recolector.recolectar(elemento)
 	}
 }
 
