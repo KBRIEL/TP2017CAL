@@ -1,4 +1,9 @@
 //TP1
+
+//Rehacer a jerry
+//Parasitos Alienigenas: ver observacion (no reentregar)
+//Inteligencia: eliminar la variable de instancia de de Experimentos
+
 class Companiero{
 	var energia=0
 	var mochila=[]
@@ -42,10 +47,12 @@ class Companiero{
 object summer inherits Companiero{
 	
 	override method puedeRecolectar(unMaterial){
+		//CORRECCION: sobrrescribir solo lo que corresponde. El algoritmo está duplicado
 		return (mochila.size()<2)and 
 			(self.energia()>=unMaterial.energiaDeRecoleccion()*0.8)
 	}
 	
+		//Correccion: Codigo duplicado
 	override method darObjetosA(unCientifico){  //cambio nombre de unCompaniero a unCientifico, para evitar confusiones.
 		unCientifico.recibir(mochila)
 		mochila.clear()
@@ -57,6 +64,11 @@ object summer inherits Companiero{
 object jerry inherits Companiero{
 	
 	method estaAlegre() {
+		//CORRECCION: no hace checkear que el cientifico sea rick!
+		
+		//El humor de jerry es algo que se tiene que acordar. Se pone de mal humor cuando le entrega los artefactos
+		//y vuelve a estar alegre al momento de recolectar un ser vivo
+		//y si recolecta un ser radiactivo se pone euforico
 		return !cientifico.equals(rick) || mochila.any({e=> e.estaVivo()})
 	}
 	
@@ -66,6 +78,8 @@ object jerry inherits Companiero{
 													(mochila.size()==0)and 
 													(self.energia()>=unMaterial.energiaDeRecoleccion()) }
 	}
+	
+	// falta cambiar que se puede perder los objetos cuando se los da a jerry!
 	
 }
 
@@ -233,7 +247,7 @@ object rick{
 //--------------------------------------------------------------------------------------
 class Experimento { //Los experimentos una vez creados, tienen el comportamiento de un material, 
 				  					   // y son considerados como tal 
-	var componentes = #{}
+	var componentes = #{} //Evitar esta variable de instancia!
 	
 	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y a�adir el material resultante a la mochila
 																						//en caso de ser necesario.
@@ -256,6 +270,7 @@ object experimentoBateria inherits Experimento{
 	
 	override method crearExperimento(unCientifico){
 		componentes.clear()
+		//CORRECCION: esconder la estrategia: pedirle a rick que elija los elementos y que rick hable con la estrategia
 		componentes = #{unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({elem=>elem.gramosDeMetal()>200}))
 					  , unCientifico.getEstrategia().elegir(unCientifico.getMochila().filter({elem=>elem.esRadioactivo()}))
 					   }
@@ -388,6 +403,7 @@ class ParasitoAlienigena {
 	
 	method recoleccion(unRecolector){
 		acciones.forEach({accion =>
+		//Correccion: pasar por parametros al recolector!	
 		accion.companieroEs(unRecolector)
 		accion.efecto()
 		})
