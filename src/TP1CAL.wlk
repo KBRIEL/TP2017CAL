@@ -29,13 +29,14 @@ class Companiero{
 		energia= energia + _energia
 		
 	}
-	method puedeRecolectar(unMaterial){
-		return (mochila.size()<3)and 
-			(self.energia()>=unMaterial.energiaDeRecoleccion())
-	}
+	method puedeRecolectar(unMaterial)
+	
 	
 	method sinEnergia(){
 		energia= 0
+	}
+	method mochila(){
+		return mochila
 	}
 }
 
@@ -54,26 +55,84 @@ object summer inherits Companiero{
 	
 }
 	
-object jerry inherits Companiero{
+//--------------------JERRY-----------------------------------------------------	
 	
-	method estaAlegre() {
-		return !cientifico.equals(rick) || mochila.any({e=> e.estaVivo()})
+object jerry inherits Companiero{
+	var estado = buenHumor
+	
+	
+	method cientificoQueLoEnoja(){
+		return rick 
 	}
 	
-	override method puedeRecolectar(unMaterial) {
-		return if (self.estaAlegre()) super(unMaterial)
-												else{
-													(mochila.size()==0)and 
-													(self.energia()>=unMaterial.energiaDeRecoleccion()) }
+	method cambiarDeEstado(unEstado){
+		estado =unEstado
+	}
+	
+	override method puedeRecolectar(unMaterial){
+		return estado.puedeRecolectar(unMaterial)
+		
+			
+	}
+	
+	override method darObjetosA(unCientifico){ 
+		unCientifico.recibir(mochila)
+		mochila.clear()
+		self.cambioEnergia(-10)
+		if (self.cientificoQueLoEnoja()==unCientifico){
+			estado=malHumorado
+			
+		}
+		
+		
+	}
+	method estadoSobreExitado()=sobreexitado
+	
+	method recoleccionVivo(unMaterial){
+		if (unMaterial.estaVivo()){
+			estado=buenHumor
+		}
+	}
+	method recoleccionRadiactivo(unMaterial){
+		if (unMaterial.esRadiactivo()){
+			estado=sobreexitado
+			
+		}
+	}
+	method eliminarAlAzar(){
+		if(1.randomUpTo(4)==3){mochila.clear()}
+	}
+	
+	method recoleccionSobreExitado(){
+		 if (estado==self.estadoSobreExitado())
+			{self.eliminarAlAzar()}
+		
+	}
+	
+	override method recolectar(unMaterial){
+	 //	if (not (self.puedeRecolectar(unMaterial)))
+		//	{
+		//		self.error("No puede recolectar: " + unMaterial)
+		//	}
+		//	mochila.add(unMaterial)
+		//	unMaterial.recoleccion(self)
+			super(unMaterial)
+		self. recoleccionVivo(unMaterial)
+		self.recoleccionRadiactivo(unMaterial)
+		self.recoleccionSobreExitado()
 	}
 	
 }
 
+
+//---------------------------------------------fin Jerry-----------------
 object morty inherits Companiero{
 	
-	method mochila(){
-		return mochila
+	override method puedeRecolectar(unMaterial){
+		return (mochila.size()<3)and 
+			(self.energia()>=unMaterial.energiaDeRecoleccion())
 	}
+	
 }
 //-----------------------------------------------------------------------------
 class Material {
@@ -236,11 +295,11 @@ object rick{
 class Experimento { //Los experimentos una vez creados, tienen el comportamiento de un material, 
 				  					   // y son considerados como tal 
 	
-	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y aï¿½adir el material resultante a la mochila
+	method crearExperimento(unCientifico) //crear experimento incluye el aplicar un efecto, y añadir el material resultante a la mochila
 																						//en caso de ser necesario.
 	{
 		var componentes= self.filtrado(unCientifico)
-		unCientifico.removerMateriales(componentes) // comï¿½n a todos los experimentos.
+		unCientifico.removerMateriales(componentes) // comun a todos los experimentos.
 		self.aplicarEfecto(unCientifico.getCompaniero())
 		unCientifico.recibir(#{self.nuevoMaterial(componentes)})
 	}
@@ -292,10 +351,10 @@ object experimentoShockElectrico inherits Experimento{
 		return mochila.any({e => e.energiaProducida()>0}) && mochila.any({e => e.electricidadQueConduce() > 0})
 	}
 	override method nuevoMaterial(componentes){
-		self.error('no deberÃ­a entrar acÃ¡')
+		self.error('no debería entrar acá')
 	}
 	override method filtrado(unCientifico){
-		self.error('no deberÃ­a entrar aca')
+		self.error('no debería entrar aca')
 	}
 	
 	override method crearExperimento(unCientifico){
@@ -309,7 +368,7 @@ object experimentoShockElectrico inherits Experimento{
 		var energiaGanada = componentes.find({e => e.energiaProducida()>0}).energiaProducida() 
 											* 
 						componentes.find({e => e.electricidadQueConduce() > 0}).electricidadQueConduce()
-		/*Fin cï¿½lculo energï¿½a. */
+		/*Fin calculo energia. */
 		unCompaniero.cambioEnergia(energiaGanada)
 	}
 }
@@ -420,7 +479,7 @@ object descartarUnElemento{
 	}
 }
 
-class IncrementaODecrementaEnergia{//la acciï¿½n energiaParaEfecto(porcentaje) se configura al inicio del juego
+class IncrementaODecrementaEnergia{//la accion energiaParaEfecto(porcentaje) se configura al inicio del juego
 	
 	var porcentajeEnergia
 	constructor(_porcentajeEnergia){// es el porcentaje ejem 10 es el 10%
@@ -434,7 +493,7 @@ class IncrementaODecrementaEnergia{//la acciï¿½n energiaParaEfecto(porcentaje) s
 	}
 }
 
-class ElementoOculto{//la acciï¿½n elementoOculto(unElemento) se configura al inicio del juego
+class ElementoOculto{//la accion elementoOculto(unElemento) se configura al inicio del juego
 	
 	var elemento 
 	
@@ -469,7 +528,7 @@ object inteligenciaMejorGenerador{
 }
 
 object inteligenciaEcologico{ //se considera que si no se cumplen ninguna de las opciones, aplique la estrategia al azar
-											                                              	//considerada por defecto ^
+											                                              	//considerada por defecto 
 	method elegir(lsMateriales){
 		var eleccion = inteligenciaAzar.elegir(lsMateriales)
 		if (lsMateriales.any({e => e.estaVivo()})){
@@ -483,5 +542,28 @@ object inteligenciaEcologico{ //se considera que si no se cumplen ninguna de las
 		
 		// hubiera preferido dejar 'azar' al inicio, if radioactivo segundo, if esta vivo tercero SIN ELSE intermedio
 		// aunque de esa forma hay que leerlo "a la inversa"
+	}
+}
+//-----------Estados de Jerry-----------------
+object sobreexitado{
+	 method puedeRecolectar(unMaterial){
+	 	return (jerry.mochila().size()<6)and 
+			(jerry.energia()>=unMaterial.energiaDeRecoleccion())
+   }
+}
+
+object malHumorado{
+	method puedeRecolectar(unMaterial){
+		return (jerry.mochila().size()==0)and 
+			(jerry.energia()>=unMaterial.energiaDeRecoleccion())
+			
+		}
+	
+}	
+
+object buenHumor{
+	method puedeRecolectar(unMaterial){
+		return (jerry.mochila().size()<3)and 
+			(jerry.energia()>=unMaterial.energiaDeRecoleccion())
 	}
 }
